@@ -126,13 +126,13 @@ Compliance Alignment
 
 This implementation supports:
 
-ISO 27001 – Data protection & access control
+#ISO 27001 – Data protection & access control
 
-NIST 800-53 – SI, IA, AC controls
+#NIST 800-53 – SI, IA, AC controls
 
-AWS Well-Architected – Security Pillar
+#AWS Well-Architected – Security Pillar
 
-GDPR Article 32 – Security of processing
+#GDPR Article 32 – Security of processing
 
 How This Is Used in the Real World
 
