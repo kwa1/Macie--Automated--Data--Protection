@@ -42,10 +42,28 @@ module "s3_sensitive" {
 # --------------------------
 # 4. Macie
 # --------------------------
-module "macie" {
-  source     = "./terraform-modules/macie"
-  s3_buckets = [module.s3_sensitive.bucket_id]
+module "lambda_remediation" {
+  source = "./terraform-modules/lambda-remediation"
+
+  lambda_name = "remediate-sensitive-data"
+  s3_buckets  = var.s3_buckets
+  # ...other variables
 }
+
+module "macie" {
+  source      = "./terraform-modules/macie"
+  s3_buckets  = var.s3_buckets
+  lambda_arn  = module.lambda_remediation.lambda_arn
+  lambda_name = module.lambda_remediation.lambda_name
+}
+
+module "eventbridge" {
+  source      = "./terraform-modules/eventbridge"
+  rule_name   = "macie-findings-event"
+  lambda_arn  = module.lambda_remediation.lambda_arn
+  lambda_name = module.lambda_remediation.lambda_name
+}
+
 
 # --------------------------
 # 5. Lambda Remediation
@@ -78,9 +96,17 @@ module "guardduty" {
 module "securityhub" {
   source = "./terraform-modules/securityhub"
 }
-
+-----------------------------------------------------
+# 9. eventbridge
+--------------------------------------------------------
+ module "eventbridge" {
+  source      = "./terraform-modules/eventbridge"
+  rule_name   = "macie-findings-event"
+  lambda_arn  = module.lambda_remediation.lambda_arn
+  lambda_name = module.lambda_remediation.lambda_name
+}  
 # --------------------------
-# 9. Network Security
+# 10. Network Security
 # --------------------------
 module "network" {
   source           = "./terraform-modules/network-security"
